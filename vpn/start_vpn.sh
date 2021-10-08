@@ -1,4 +1,4 @@
-docker run \
+sudo docker run \
     --name ipsec-vpn-server \
     --env-file ./vpn.env \
     --restart=always \
