@@ -1,0 +1,11 @@
+version: "3.8"
+
+services:
+  nginx:
+    image: nginx:1.18-alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /data/nginx/conf.d:/etc/nginx/conf.d
+      - /data/nginx/certs:/etc/nginx/certs
