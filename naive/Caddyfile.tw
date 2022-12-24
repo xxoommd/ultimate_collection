@@ -1,0 +1,11 @@
+:443, tw1.projectx.top #你的域名
+  tls xxoommd@tw1.projectx.top #你的邮箱
+  route {
+   forward_proxy {
+     basic_auth xxoommd fuckyouall #用户名和密码
+     hide_ip
+     hide_via
+     probe_resistance
+    }
+   respond / "hello world!"
+  }
