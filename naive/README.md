@@ -63,7 +63,7 @@ echo ":443, ${DEPLOY_DOMAIN}
      hide_via
      probe_resistance
     }
-   respond / "hello world!"
+   respond / \"hello world!\"
   }" > Caddyfile && \
 ./caddy start
 
