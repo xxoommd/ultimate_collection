@@ -25,6 +25,6 @@ echo ":443, ${DEPLOY_DOMAIN}
     }
    respond / "hello world!"
   }" > Caddyfile && \
-./cadd start
+./caddy start
 
 ```
