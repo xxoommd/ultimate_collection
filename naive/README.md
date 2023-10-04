@@ -39,16 +39,16 @@ go install github.com/caddyserver/xcaddy/cmd/xcaddy@latest && \
 ~/go/bin/xcaddy build --with github.com/caddyserver/forwardproxy@caddy2=github.com/klzgrad/forwardproxy@naive
 
 echo ":443, ${DEPLOY_DOMAIN}
-  tls xxoommd@${DEPLOY_DOMAIN}
+tls xxoommd@${DEPLOY_DOMAIN}
   route {
-   forward_proxy {
-     basic_auth xxoommd fuckyouall #用户名和密码
-     hide_ip
-     hide_via
-     probe_resistance
-    }
-   respond projectx.top!!!
-  }" > Caddyfile && \
+    forward_proxy {
+    basic_auth xxoommd fuckyouall
+    hide_ip
+    hide_via
+    probe_resistance
+  }
+  respond ${DEPLOY_DOMAIN}!
+}" > Caddyfile && \
 ./caddy start
 
 ```
