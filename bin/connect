@@ -88,6 +88,7 @@ function main() {
   done
 
   echo -e "[${RED}ERR${NC}] invalid arguments: $@"
+  exit 1
 }
 
 main $@
