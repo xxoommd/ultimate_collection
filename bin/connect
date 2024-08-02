@@ -1,0 +1,92 @@
+#!/usr/bin/bash
+
+GREEN='\033[0;32m'
+RED='\033[0;31m'
+BLUE='\033[0;34m'
+YELLOW='\033[0;33m'
+UNDERLINE='\033[4m' # 下划线
+NC='\033[0m'        # No Color
+
+declare -A servers
+servers["vm0"]="ssh -p 22 gaofei@192.168.137.105"
+servers["tw1"]="ssh root@tw1.xxoommd.asia"
+servers["tw2"]="ssh root@tw2.xxoommd.asia"
+servers["tw3"]="ssh root@tw3.xxoommd.asia"
+servers["hk1"]="ssh root@hk1.xxoommd.asia"
+servers["hk2"]="ssh root@hk2.xxoommd.asia"
+servers["us1"]="ssh root@us1.xxoommd.asia"
+
+# parse_ssh_string: Parse ssh command to port, user, port
+#
+#  - e.g: result=($(parse_ssh_string "ssh -p 2432 gaofei@192.168.137.105"))
+#
+#  - params: string (e.g: ssh -p 2222 root@192.168.137.101)
+#  - return: array (port[default:22] user host)
+function parse_ssh_string() {
+  local str="$@"
+  local port=22 # 默认端口
+  local user=""
+  local host=""
+
+  # 使用正则表达式解析字符串
+  if [[ $str =~ -p[[:space:]]([0-9]+) ]]; then
+    port=${BASH_REMATCH[1]}
+  fi
+
+  if [[ $str =~ ([^[:space:]]+)@([a-zA-Z0-9.-]+) ]]; then
+    user=${BASH_REMATCH[1]}
+    host=${BASH_REMATCH[2]}
+  fi
+
+  # 将结果存储到数组
+  local result=("$port" "$user" "$host")
+  echo "${result[@]}"
+}
+
+function help() {
+  echo "Usage:"
+  echo "  1. ssh to server: con [NAME]"
+  echo "  2. remove know_hosts: con -R [NAME]"
+  echo ""
+  echo "Available servers:"
+  for name in "${!servers[@]}"; do
+    sshcmd="${servers[$name]}"
+    srv=($(parse_ssh_string $sshcmd))
+    echo -e " - $GREEN$name$NC: ${srv[1]}@$YELLOW$UNDERLINE${srv[2]}$NC - SSH_PORT:$RED${srv[0]}$NC"
+  done
+}
+
+function main() {
+  if [[ -z $1 || $1 == "-h" || $1 == "--help" ]]; then
+    help
+    exit 0
+  fi
+
+  if [[ $1 == "-R" ]]; then
+    for name in "${!servers[@]}"; do
+      if [[ $2 == $name ]]; then
+        sshcmd="${servers[$name]}"
+        server=($(parse_ssh_string $sshcmd))
+        echo -e "Executing: $GREEN ssh-keygen -R ${server[2]}$NC"
+        ssh-keygen -R ${server[2]}
+        exit $?
+      fi
+    done
+
+    ssh-keygen -R $2
+    exit $?
+  fi
+
+  for name in "${!servers[@]}"; do
+    if [[ $1 == $name ]]; then
+      sshcmd="${servers[$name]}"
+      server=($(parse_ssh_string $sshcmd))
+      echo -e "Executing: $GREEN ssh -p ${server[0]} ${server[1]}@${server[2]}$NC"
+      exit $?
+    fi
+  done
+
+  echo -e "[${RED}ERR${NC}] invalid arguments: $@"
+}
+
+main $@
