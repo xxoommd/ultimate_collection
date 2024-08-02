@@ -82,6 +82,7 @@ function main() {
       sshcmd="${servers[$name]}"
       server=($(parse_ssh_string $sshcmd))
       echo -e "Executing: $GREEN ssh -p ${server[0]} ${server[1]}@${server[2]}$NC"
+      eval $sshcmd
       exit $?
     fi
   done
