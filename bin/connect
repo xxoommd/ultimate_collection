@@ -15,6 +15,7 @@ servers["tw3"]="ssh root@tw3.xxoommd.asia"
 servers["hk1"]="ssh root@hk1.xxoommd.asia"
 servers["hk2"]="ssh root@hk2.xxoommd.asia"
 servers["us1"]="ssh root@us1.xxoommd.asia"
+servers["jp"]="ssh root@jp.xxoommd.asia"
 
 # parse_ssh_string: Parse ssh command to port, user, port
 #
