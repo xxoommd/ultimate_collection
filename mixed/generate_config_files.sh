@@ -39,11 +39,10 @@ fi
 CADDY_STORAGE="/root/caddy_data"
 
 CERT_DIR="$CADDY_STORAGE/certificates/acme-v02.api.letsencrypt.org-directory/$DEPLOY_DOMAIN"
-CRT_FILE=$CERT_DIR/$DEPLOY_DOMAIN.crt
-KEY_FILE=$CERT_DIR/$DEPLOY_DOMAIN.key
+CRT_FILE="$CERT_DIR/$DEPLOY_DOMAIN.crt"
+KEY_FILE="$CERT_DIR/$DEPLOY_DOMAIN.key"
 
-
-cat > Caddyfile <<EOF
+cat > Caddyfile << EOF
 {
 	storage file_system $CADDY_STORAGE
 }
