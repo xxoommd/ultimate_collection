@@ -144,7 +144,6 @@ function remove_known_host() {
     fi
   done
 
-  # echo -e "\n[INFO] Executing: ${GREEN}ssh-keygen -R $target_host${NC} ...\n"
   cmd="ssh-keygen -R $target_host"
   print_info "Executing $cmd"
   eval $cmd
