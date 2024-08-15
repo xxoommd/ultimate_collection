@@ -24,6 +24,7 @@ servers["hk1"]="ssh root@hk1.xxoommd.asia"
 servers["hk2"]="ssh root@hk2.xxoommd.asia"
 servers["us1"]="ssh root@us1.xxoommd.asia"
 servers["jp"]="ssh root@jp.xxoommd.asia"
+servers["yact"]="ssh root@172.50.10.83"
 
 function help() {
   echo "Usage:"
@@ -41,7 +42,7 @@ function help() {
     user=${srv[1]}
     host=${srv[2]}
 
-    printf "${GREEN}%-5s${NC}" "* $name"
+    printf "${GREEN}%-6s${NC}" "* $name"
     printf " -> "
     printf "${NC}%-24s${NC}" "$user@$host"
     printf "${YELLOW}%-16s${NC}\n" " ssh_port:$port"
