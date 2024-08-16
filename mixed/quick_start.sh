@@ -142,8 +142,6 @@ echo -e "[INFO] Handling ${GREEN}system daemons${NC} ..."
 systemctl daemon-reload && systemctl enable caddy && systemctl enable hysteria
 echo -e "[INFO] Done\n"
 
-echo -e "All systems to go! Run ${GREEN}caddy${NC} first to gain certificates. Wait a few seconds then start ${GREEN}hysteria${NC}."
-echo
-echo -e " caddy: ${GREEN}systemctl start caddy${NC}"
-echo -e " hysteria: ${GREEN}systemctl start hysteria${NC}"
-echo
+echo -e "All ready!!!"
+echo -e "  Note: Run ${GREEN}caddy${NC} first to gain certificates. Wait a few seconds then start ${GREEN}hysteria${NC}."
+echo -e "  E.g: ${GREEN}systemctl start caddy && sleep 10 && systemctl start hysteria${NC}\n"
