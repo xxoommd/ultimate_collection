@@ -9,7 +9,7 @@ NC='\033[0m'        # No Color
 
 if [[ -z $DEPLOY_DOMAIN ]]; then
   echo
-  echo "[${RED}Err${NC}]DEPLOY_DOMAIN is not set"
+  echo "[${RED}Err${NC}] DEPLOY_DOMAIN is not set"
   echo
   exit 1
 fi
@@ -26,6 +26,8 @@ is_valid_domain() {
 }
 
 # 验证域名格式是否合法
+echo -e "\n[INFO] Validate DOMAN: ${BLUE}${DEPLOY_DOMAIN}${NC} ..."
+
 if is_valid_domain "$DEPLOY_DOMAIN"; then
   echo -e "[INFO] ${BLUE}${UNDERLINE}$DEPLOY_DOMAIN${NC} is a valid domain.\n"
 else
@@ -140,7 +142,7 @@ echo -e "[INFO] Handling ${GREEN}system daemons${NC} ..."
 systemctl daemon-reload && systemctl enable caddy && systemctl enable hysteria
 echo -e "[INFO] Done\n"
 
-echo -e "All systems to go! Run ${GREEN}caddy${NC} first to gain certificates. Then ${GREEN}hysteria${NC}."
+echo -e "All systems to go! Run ${GREEN}caddy${NC} first to gain certificates. Wait a few seconds then start ${GREEN}hysteria${NC}."
 echo
 echo -e " caddy: ${GREEN}systemctl start caddy${NC}"
 echo -e " hysteria: ${GREEN}systemctl start hysteria${NC}"
