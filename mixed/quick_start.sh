@@ -51,6 +51,7 @@ curl -L https://github.com/xxoommd/ultimate_collection/archive/refs/tags/latest.
   cp ~/ultimate_collection-latest/mixed/caddy /usr/local/bin/ &&
   cp ~/ultimate_collection-latest/mixed/hysteria /usr/local/bin/
 
+# Generating all config files...
 echo -e "[INFO] Generating ${GREEN}${CADDY_CONFIG_FILE}${NC} ..."
 cat >${CADDY_CONFIG_FILE} <<EOF
 {
@@ -135,12 +136,12 @@ WantedBy=multi-user.target
 EOF
 echo -e "[INFO] Done\n"
 
-echo -e "[INFO] Running ${GREEN}systemctl daemon-reload${NC} ..."
-systemctl daemon-reload
+echo -e "[INFO] Handling ${GREEN}system daemons${NC} ..."
+systemctl daemon-reload && systemctl enable caddy && systemctl enable hysteria
 echo -e "[INFO] Done\n"
 
-echo "All systems to go! Run caddy.service first to gain certificates. Then hysteria."
+echo -e "All systems to go! Run ${GREEN}caddy${NC} first to gain certificates. Then ${GREEN}hysteria${NC}."
 echo
-echo -e " caddy: ${GREEN}systemctl enable caddy && systemctl start caddy${NC}"
-echo -e " hysteria: ${GREEN}systemctl enable hysteria && systemctl start hysteria${NC}"
+echo -e " caddy: ${GREEN}systemctl start caddy${NC}"
+echo -e " hysteria: ${GREEN}systemctl start hysteria${NC}"
 echo
