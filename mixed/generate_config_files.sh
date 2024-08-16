@@ -7,6 +7,17 @@ YELLOW='\033[0;33m'
 UNDERLINE='\033[4m' # 下划线
 NC='\033[0m'        # No Color
 
+WORKING_DIR="/root/.local/magic"
+CADDY_STORAGE="${WORKING_DIR}/caddy"
+CERT_DIR="$CADDY_STORAGE/certificates/acme-v02.api.letsencrypt.org-directory/$DEPLOY_DOMAIN"
+CRT_FILE="$CERT_DIR/$DEPLOY_DOMAIN.crt"
+KEY_FILE="$CERT_DIR/$DEPLOY_DOMAIN.key"
+HY_CONFIG_FILE="${WORKING_DIR}/hy-config.yaml"
+CADDY_CONFIG_FILE="${WORKING_DIR}/Caddyfile"
+
+if [ ! -d "${WORKING_DIR}" ]; then
+  mkdir -p "${WORKING_DIR}"
+fi
 
 if [ -z $1 ]; then
   echo -e "[${RED}ERR${NC}] Should provide at least 1 argument"
@@ -17,12 +28,12 @@ DEPLOY_DOMAIN=$1
 
 is_valid_domain() {
   local str="$1"
-  
+
   # 使用正则表达式匹配合法域名格式
   if [[ $str =~ ^[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(\.[a-zA-Z]{2,})+$ ]]; then
-    return 0  # 合法返回0
+    return 0 # 合法返回0
   else
-    return 1  # 不合法返回1
+    return 1 # 不合法返回1
   fi
 }
 
@@ -36,13 +47,7 @@ else
   exit 1
 fi
 
-CADDY_STORAGE="/root/caddy_data"
-
-CERT_DIR="$CADDY_STORAGE/certificates/acme-v02.api.letsencrypt.org-directory/$DEPLOY_DOMAIN"
-CRT_FILE="$CERT_DIR/$DEPLOY_DOMAIN.crt"
-KEY_FILE="$CERT_DIR/$DEPLOY_DOMAIN.key"
-
-cat > Caddyfile << EOF
+cat >${CADDY_CONFIG_FILE} <<EOF
 {
 	storage file_system $CADDY_STORAGE
 }
@@ -61,10 +66,10 @@ tls xxoommd@${DEPLOY_DOMAIN}
 }
 EOF
 
-echo -e "[INFO] Generate ${GREEN}Caddyfile${NC} success."
-echo -e "[INFO] Generating ${GREEN}config.json${NC} ..."
+echo -e "[INFO] Generate ${GREEN}${CADDY_CONFIG_FILE}${NC} success."
+echo -e "[INFO] Generating ${GREEN}${HY_CONFIG_FILE}${NC} ..."
 
-cat > config.yaml << EOF
+cat >${HY_CONFIG_FILE} <<EOF
 listen: :8443
 tls:
   cert: $CRT_FILE
@@ -83,5 +88,22 @@ masquerade:
 disableUDP: false
 EOF
 
-echo -e "[INFO] Generate ${GREEN}config.yaml${NC} success."
+echo -e "[INFO] Generate ${GREEN}${HY_CONFIG_FILE}${NC} success."
 echo
+
+echo -e "[INFO] Generate ${GREEN}hysteria.service${NC} success."
+cat >/etc/systemd/system/hysteria.service <<EOF
+[Unit]
+Description=Hysteria Server
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/hysteria server --config /${HY_CONFIG_FILE}
+WorkingDirectory=${WORKING_DIR}
+Restart=on-failure
+User=root
+
+[Install]
+WantedBy=multi-user.target
+EOF
