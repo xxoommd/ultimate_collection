@@ -48,13 +48,15 @@ KEY_FILE="$CERT_DIR/$DEPLOY_DOMAIN.key"
 HY_CONFIG_FILE="${WORKING_DIR}/hy-config.yaml"
 CADDY_CONFIG_FILE="${WORKING_DIR}/Caddyfile"
 
-# Download binary: caddy, hysteria
-curl -L https://github.com/xxoommd/ultimate_collection/archive/refs/tags/latest.tar.gz | tar -xz -C ~ &&
-  cp ~/ultimate_collection-latest/mixed/caddy /usr/local/bin/ &&
-  cp ~/ultimate_collection-latest/mixed/hysteria /usr/local/bin/
+
+echo -e "[INFO] Download ${GREEN}hysteria${NC} and ${GREEN}caddy${NC} ..."
+curl -o /usr/local/bin/hysteria https://github.com/xxoommd/ultimate_collection/releases/download/latest/hysteria && 
+curl -o /usr/local/bin/caddy https://github.com/xxoommd/ultimate_collection/releases/download/latest/caddy && 
+chmod +x /usr/local/bin/hysteria /usr/local/bin/caddy
+echo -e "[INFO] Download Done\n"
 
 # Generating all config files...
-echo -e "[INFO] Generating ${GREEN}${CADDY_CONFIG_FILE}${NC} ..."
+echo -e "[INFO] Generate ${GREEN}${CADDY_CONFIG_FILE}${NC} ..."
 cat >${CADDY_CONFIG_FILE} <<EOF
 {
 	storage file_system $CADDY_STORAGE
@@ -73,9 +75,9 @@ tls xxoommd@${DEPLOY_DOMAIN}
 		respond "hello ${DEPLOY_DOMAIN}@naive!"
 }
 EOF
-echo -e "[INFO] Done\n"
+echo -e "[INFO] Generate Done\n"
 
-echo -e "[INFO] Generating ${GREEN}${HY_CONFIG_FILE}${NC} ..."
+echo -e "[INFO] Generate ${GREEN}${HY_CONFIG_FILE}${NC} ..."
 cat >${HY_CONFIG_FILE} <<EOF
 listen: :8443
 tls:
@@ -94,9 +96,9 @@ masquerade:
     statusCode: 200
 disableUDP: false
 EOF
-echo -e "[INFO] Done\n"
+echo -e "[INFO] Generate Done\n"
 
-echo -e "[INFO] Generating ${GREEN}hysteria.service${NC} ..."
+echo -e "[INFO] Generate ${GREEN}hysteria.service${NC} ..."
 cat >/etc/systemd/system/hysteria.service <<EOF
 [Unit]
 Description=Hysteria Server
@@ -112,7 +114,7 @@ User=root
 [Install]
 WantedBy=multi-user.target
 EOF
-echo -e "[INFO] Done\n"
+echo -e "[INFO] Generate Done\n"
 
 echo -e "[INFO] Generating caddy.service${NC} ..."
 cat >/etc/systemd/system/caddy.service <<EOF
@@ -136,11 +138,11 @@ AmbientCapabilities=CAP_NET_BIND_SERVICE
 [Install]
 WantedBy=multi-user.target
 EOF
-echo -e "[INFO] Done\n"
+echo -e "[INFO] Generate Done\n"
 
 echo -e "[INFO] Handling ${GREEN}system daemons${NC} ..."
 systemctl daemon-reload && systemctl enable caddy && systemctl enable hysteria
-echo -e "[INFO] Done\n"
+echo -e "[INFO] Generate Done\n"
 
 echo -e "All ready!!!"
 echo -e "  Note: Run ${GREEN}caddy${NC} first to gain certificates. Wait a few seconds then start ${GREEN}hysteria${NC}."
