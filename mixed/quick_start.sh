@@ -50,8 +50,8 @@ CADDY_CONFIG_FILE="${WORKING_DIR}/Caddyfile"
 
 
 echo -e "[INFO] Download ${GREEN}hysteria${NC} and ${GREEN}caddy${NC} ..."
-curl -o /usr/local/bin/hysteria https://github.com/xxoommd/ultimate_collection/releases/download/latest/hysteria && 
-curl -o /usr/local/bin/caddy https://github.com/xxoommd/ultimate_collection/releases/download/latest/caddy && 
+curl -L -o /usr/local/bin/hysteria https://github.com/xxoommd/ultimate_collection/releases/download/latest/hysteria && 
+curl -L -o /usr/local/bin/caddy https://github.com/xxoommd/ultimate_collection/releases/download/latest/caddy && 
 chmod +x /usr/local/bin/hysteria /usr/local/bin/caddy
 echo -e "[INFO] Download Done\n"
 
