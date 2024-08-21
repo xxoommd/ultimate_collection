@@ -7,55 +7,127 @@ YELLOW='\033[0;33m'
 UNDERLINE='\033[4m' # 下划线
 NC='\033[0m'        # No Color
 
+function check_golang() {
+  echo
+  echo "[INFO] Checking golang..."
+  if command -v go >/dev/null 2>&1; then
+    GO_VER="$(go version)"
+    echo "[INFO] Go is installed: " $GO_VER
+    echo
+  else
+    echo "[INFO] Go is not installed. Start installing..."
+    install_go
+
+    if [[ $? != 0 ]]; then
+      echo -e "[${RED}Err${NC}] Install ${YELLLOW}golang${NC} fail"
+      exit 1
+    fi
+  fi
+}
+
 function install_go() {
-  wget "https://go.dev/dl/$(curl https://go.dev/VERSION?m=text | grep go).linux-amd64.tar.gz" &&
-    sudo tar -xf go*.linux-amd64.tar.gz -C /usr/local/ &&
-    rm go*.linux-amd64.tar.gz &&
+  go_ver=$(curl -s https://go.dev/VERSION?m=text | grep go)
+  echo "[INFO] Downloading ${go_ver}..."
+  curl -s -L -o /tmp/$go_ver.linux-amd64.tar.gz https://go.dev/dl/${go_ver}.linux-amd64.tar.gz &&
+    sudo tar -xf /tmp/go*.linux-amd64.tar.gz -C /usr/local/ &&
+    rm /tmp/go*.linux-amd64.tar.gz &&
     echo 'export GOROOT=/usr/local/go' >>~/.profile &&
     echo 'export PATH=$GOROOT/bin:$PATH' >>~/.profile &&
     echo 'export GO111MODULE=on' >>~/.profile &&
-    source ~/.profile
+    source ~/.profile && echo -e "[INFO] Install golang success:" && go version && echo
 }
 
-if command -v go >/dev/null 2>&1; then
-  echo "Go is installed"
-  go version
-else
-  echo "Go is not installed"
-  install_go
-
-  if [[ $? != 0 ]]; then
-    echo "Install go fail"
-    exit 1
+function build_caddy() {
+  export GOOS=$1
+  export GOARCH=$2
+  export OUTPUT="caddy-${GOOS}-${GOARCH}"
+  if [[ "$GOOS" == "windows" ]]; then
+    export OUTPUT=$OUTPUT.exe
   fi
-fi
+  cmd="~/go/bin/xcaddy build --output $BIN_PATH/${OUTPUT} --with github.com/caddyserver/forwardproxy@caddy2=github.com/klzgrad/forwardproxy@naive > /dev/null 2>&1"
+  echo -e "- Building ${GREEN}${OUTPUT}${NC}: ${YELLOW}${cmd}${NC}"
+  eval ${cmd}
+}
 
 function update_caddy() {
   go env -w GO111MODULE=on &&
     go install github.com/caddyserver/xcaddy/cmd/xcaddy@latest &&
-    ~/go/bin/xcaddy build --with github.com/caddyserver/forwardproxy@caddy2=github.com/klzgrad/forwardproxy@naive &&
-    chmod +x ./caddy
+    build_caddy "linux" "amd64" &&
+    build_caddy "darwin" "arm64" &&
+    build_caddy "darwin" "amd64" &&
+    build_caddy "windows" "amd64" &&
+    chmod +x $BIN_PATH/* && ls -lhF $BIN_PATH/caddy*
 }
 
 function update_hysteria() {
-  wget -O ./hysteria https://download.hysteria.network/app/latest/hysteria-linux-amd64-avx && chmod +x ./hysteria
+  curl -s -L -o $BIN_PATH/hysteria-linxu-amd64-avx https://download.hysteria.network/app/latest/hysteria-linux-amd64-avx &&
+    curl -s -L -o $BIN_PATH/hysteria-darwin-amd64-avx https://download.hysteria.network/app/latest/hysteria-darwin-amd64-avx &&
+    curl -s -L -o $BIN_PATH/hysteria-darwin-arm64 https://download.hysteria.network/app/latest/hysteria-darwin-arm64 &&
+    curl -s -L -o $BIN_PATH/hysteria-windows-amd64-avx.exe https://download.hysteria.network/app/latest/hysteria-windows-amd64-avx.exe &&
+    chmod +x $BIN_PATH/* && ls -lhF $BIN_PATH/hy*
 }
 
-echo
-echo -e "[INFO] Updating ${GREEN}caddy${NC} ..."
-if update_caddy; then
-  echo -e "[INFO] Updating ${GREEN}caddy${NC} success"
-else
-  echo -e "[INFO] Updating ${GREEN}caddy${NC} fail"
-  exit 1
-fi
-echo
+function main() {
+  source ~/.profile
 
-echo -e "[INFO] Updating ${GREEN}hysteria2${NC} ..."
-if update_hysteria; then
-  echo -e "[INFO] Updating ${GREEN}hysteria2${NC} success"
-else
-  echo -e "[INFO] Updating ${GREEN}hysteria2${NC} fail"
-  exit 1
-fi
-echo
+  up_caddy=false
+  up_hy=false
+
+  if [[ $# -eq 0 ]]; then
+    up_caddy=true
+    up_hy=true
+  fi
+
+  while [[ $# -gt 0 ]]; do
+    case $1 in
+    caddy)
+      up_caddy=true
+      ;;
+    hysteria | hy)
+      up_hy=true
+      ;;
+    all)
+      up_caddy=true
+      up_hy=true
+      ;;
+    *)
+      echo -e "\n[${RED}Err${NC}] Invalid arg: $1\n"
+      exit 0
+      ;;
+    esac
+    shift
+  done
+
+  BIN_PATH="./bin"
+  [ ! -d "$BIN_PATH" ] && mkdir -p $BIN_PATH # 创建./bin目录
+
+  if ! check_golang; then
+    echo -e "[${RED}Err${NC}] Check ${YELLLOW}golang${NC} success"
+    exit 1
+  fi
+
+  if [ "$up_caddy" = true ]; then
+    echo
+    echo -e "[INFO] Updating ${GREEN}caddy${NC} ..."
+    if update_caddy; then
+      echo -e "[INFO] Updating ${GREEN}caddy${NC} success"
+    else
+      echo -e "[INFO] Updating ${GREEN}caddy${NC} fail"
+      exit 1
+    fi
+    echo
+  fi
+
+  if [ "$up_hy" = true ]; then
+    echo -e "[INFO] Updating ${GREEN}hysteria2${NC} ..."
+    if update_hysteria; then
+      echo -e "[INFO] Updating ${GREEN}hysteria2${NC} success"
+    else
+      echo -e "[Err] Updating ${GREEN}hysteria2${NC} fail"
+      exit 1
+    fi
+    echo
+  fi
+}
+
+main $@
