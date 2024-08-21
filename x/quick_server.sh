@@ -14,7 +14,7 @@ if [[ -z $DEPLOY_DOMAIN ]]; then
   exit 1
 fi
 
-is_valid_domain() {
+function is_valid_domain() {
   local str="$1"
 
   # 使用正则表达式匹配合法域名格式
@@ -48,11 +48,10 @@ KEY_FILE="$CERT_DIR/$DEPLOY_DOMAIN.key"
 HY_CONFIG_FILE="${WORKING_DIR}/hy-config.yaml"
 CADDY_CONFIG_FILE="${WORKING_DIR}/Caddyfile"
 
-
 echo -e "[INFO] Download ${GREEN}hysteria${NC} and ${GREEN}caddy${NC} ..."
-curl -L -o /usr/local/bin/hysteria https://github.com/xxoommd/ultimate_collection/releases/download/latest/hysteria && 
-curl -L -o /usr/local/bin/caddy https://github.com/xxoommd/ultimate_collection/releases/download/latest/caddy && 
-chmod +x /usr/local/bin/hysteria /usr/local/bin/caddy
+curl -L -o /usr/local/bin/hysteria https://github.com/xxoommd/ultimate_collection/releases/download/latest/hysteria &&
+  curl -L -o /usr/local/bin/caddy https://github.com/xxoommd/ultimate_collection/releases/download/latest/caddy &&
+  chmod +x /usr/local/bin/hysteria /usr/local/bin/caddy
 echo -e "[INFO] Download Done\n"
 
 # Generating all config files...

@@ -9,6 +9,33 @@ NC='\033[0m'        # No Color
 
 BIN_PATH="."
 
+if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+	echo "Linux"
+elif [[ "$OSTYPE" == "darwin"* ]]; then
+	echo "macOS"
+elif [[ "$OSTYPE" == "msys"* || "$OSTYPE" == "cygwin"* ]]; then
+	echo "Git Bash on Windows"
+else
+	echo -e "[${RED}ERR${NC}] Unsupported OS: ${YELLOW}${OSTYPE}${NC}"
+	exit 1
+fi
+
+function download_hysteria() {
+
+}
+
+function download_caddy() {
+
+}
+
+function gen_hy_config() {
+
+}
+
+function gen_caddy_config() {
+
+}
+
 echo -e "[INFO] Download ${GREEN}hysteria${NC} and ${GREEN}caddy${NC} ..." &&
 	curl -L -o ${BIN_PATH}/hysteria https://github.com/xxoommd/ultimate_collection/releases/download/latest/hysteria &&
 	curl -L -o ${BIN_PATH}/caddy https://github.com/xxoommd/ultimate_collection/releases/download/latest/caddy &&
