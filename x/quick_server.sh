@@ -7,6 +7,13 @@ YELLOW='\033[0;33m'
 UNDERLINE='\033[4m' # 下划线
 NC='\033[0m'        # No Color
 
+if [[ "$OSTYPE" != "linux-gnu"* ]]; then
+  echo
+  echo "[${RED}Err${NC}] Unsupported OS: $OSTYPE. Linux only."
+  echo
+  exit 1
+fi
+
 if [[ -z $DEPLOY_DOMAIN ]]; then
   echo
   echo "[${RED}Err${NC}] DEPLOY_DOMAIN is not set"
@@ -49,8 +56,8 @@ HY_CONFIG_FILE="${WORKING_DIR}/hy-config.yaml"
 CADDY_CONFIG_FILE="${WORKING_DIR}/Caddyfile"
 
 echo -e "[INFO] Download ${GREEN}hysteria${NC} and ${GREEN}caddy${NC} ..."
-curl -L -o /usr/local/bin/hysteria https://github.com/xxoommd/ultimate_collection/releases/download/latest/hysteria &&
-  curl -L -o /usr/local/bin/caddy https://github.com/xxoommd/ultimate_collection/releases/download/latest/caddy &&
+curl -s -L -o /usr/local/bin/hysteria https://github.com/xxoommd/ultimate_collection/releases/download/latest/hysteria-linxu-amd64-avx &&
+  curl -s -L -o /usr/local/bin/caddy https://github.com/xxoommd/ultimate_collection/releases/download/latest/caddy-linux-amd64 &&
   chmod +x /usr/local/bin/hysteria /usr/local/bin/caddy
 echo -e "[INFO] Download Done\n"
 
