@@ -33,11 +33,11 @@ if [[ "$OSTYPE" == "linux-gnu"* ]]; then
 	fi
 
 	download_url_naive="https://github.com/xxoommd/ultimate_collection/releases/download/latest/naive-linux-amd64"
-	download_url_hysteria="https://github.com/xxoommd/ultimate_collection/releases/download/latest/hysteria-linux-amd64"
+	download_url_hysteria="https://github.com/xxoommd/ultimate_collection/releases/download/latest/hysteria-linux-amd64-avx"
 elif [[ "$OSTYPE" == "darwin"* ]]; then
 	if [[ $os_arch == "x86_64" ]]; then
 		download_url_naive="https://github.com/xxoommd/ultimate_collection/releases/download/latest/naive-darwin-amd64"
-		download_url_hysteria="https://github.com/xxoommd/ultimate_collection/releases/download/latest/hysteria-darwin-amd64"
+		download_url_hysteria="https://github.com/xxoommd/ultimate_collection/releases/download/latest/hysteria-darwin-amd64-avx"
 	elif [[ $os_arch == "arm64" ]]; then
 		download_url_naive="https://github.com/xxoommd/ultimate_collection/releases/download/latest/naive-darwin-arm64"
 		download_url_hysteria="https://github.com/xxoommd/ultimate_collection/releases/download/latest/hysteria-darwin-arm64"
@@ -48,7 +48,7 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
 elif [[ "$OSTYPE" == "msys"* || "$OSTYPE" == "cygwin"* ]]; then
 	if [[ $os_arch == "x86_64" ]]; then
 		download_url_naive="https://github.com/xxoommd/ultimate_collection/releases/download/latest/naive-windows-amd64.exe"
-		download_url_hysteria="https://github.com/xxoommd/ultimate_collection/releases/download/latest/hysteria-windows-amd64.exe"
+		download_url_hysteria="https://github.com/xxoommd/ultimate_collection/releases/download/latest/hysteria-windows-amd64-avx.exe"
 	else
 		logerr "Unsuppored arch: ${YELLOW}${os_arch}"${NC}
 		exit 1
